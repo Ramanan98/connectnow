@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style type="text/css">
+  <style>
+  body {font-family: Arial, Helvetica, sans-serif;}
+  * {box-sizing: border-box}
+
+  /* Full-width input fields */
+  input[type=text], input[type=password] {
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0 22px 0;
+    display: inline-block;
+    border: none;
+    background: #f1f1f1;
+  }
+
+  input[type=text]:focus, input[type=password]:focus {
+    background-color: #ddd;
+    outline: none;
+  }
+
+  hr {
+    border: 1px solid #f1f1f1;
+    margin-bottom: 25px;
+  }
+
+  /* Set a style for all buttons */
+  button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    opacity: 0.9;
+  }
+
+  button:hover {
+    opacity:1;
+  }
+
+  /* Float signup buttons and add an equal width  */
+  .signupbtn {
+    float: left;
+    width: 50%;
+  }
+
+  /* Add padding to container elements */
+  .container {
+    padding: 16px;
+  }
+
+  </style>
+
+</style>
+</head>
+<body>
+<script type="text/javascript">
+  async function serverLogin()
+  {
+          var formdata = new FormData();
+          formdata.append("username", document.getElementById("username").value);
+          formdata.append("password", document.getElementById("password").value);
+          var requestOptions = {
+            method: 'POST',
+            body: formdata,
+            redirect: 'follow'
+          };
+          const response=await fetch("http://127.0.0.1:8000/login/", requestOptions).then( response => response.json().then(receivedData => ({status:response.status,data:receivedData})));
+          if (response.status=="200")
+          {
+            localStorage.setItem('token',response.data.token);
+            console.log(response.data.token);
+           window.location.replace('http://127.0.0.1:8000/start_chat/');
+          }
+          else
+          {
+            console.log("failed");
+            // console.log(response.data.no);
+            if (response.data.non_field_errors)
+            {
+              alert("Wrong username or password");
+            }
+            else
+            {
+              alert("login failed");
+            }
+          }
+  }
+  function onLogin()
+  {
+    serverLogin();
+    return false;
+  }
+
+</script>
+<form onsubmit="return onLogin()">
+  <div class="container">
+    <h1>Login </h1>
+    <hr>
+    <label for="username"><b>username </t></b></label>
+    <br>
+    <input type="text" placeholder="Enter username" id="username" required>
+    <br>
+
+    <label for="password"><b>Password</b></label>
+    <br>
+    <input type="password" placeholder="Enter Password" id="password" required><br>
+    <button id="login" class="Loginbtn">Login</button>
+  </div>
+</form>
+<script>
+
+</script>
+
+</body>
+</html>

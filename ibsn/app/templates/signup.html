@@ -1,0 +1,239 @@
+<html>
+	<head>
+		<!-- link rel="stylesheet" href="style.css" -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	</head>
+	<style>
+		body {font-family: Arial, Helvetica, sans-serif;}
+
+		* {box-sizing: border-box}
+
+		input[type=text], input[type=password] {
+		  width: 100%;
+		  padding: 15px;
+		  margin: 5px 0 22px 0;
+		  display: inline-block;
+		  border: none;
+		  background: #f1f1f1;
+		}
+
+		input[type=number], input[type=password] {
+		  width: 100%;
+		  padding: 15px;
+		  margin: 5px 0 22px 0;
+		  display: inline-block;
+		  border: none;
+		  background: #f1f1f1;
+		}
+
+		input[type=text]:focus, input[type=password]:focus {
+		  background-color: #ddd;
+		  outline: none;
+		}
+
+		hr {
+		  border: 1px solid #f1f1f1;
+		  margin-bottom: 25px;
+		}
+		/* Set a style for all buttons */
+		button {
+		  background-color: #4CAF50;
+		  color: white;
+		  padding: 14px 20px;
+		  margin: 8px 0;
+		  border: none;
+		  cursor: pointer;
+		  width: 100%;
+		  opacity: 0.9;
+		}
+
+		button:hover {
+		  opacity:1;
+		}
+
+	/* Float signup buttons and add an equal width  */
+		.signupbtn {
+		  float: left;
+		  width: 50%;
+		}
+
+		/* Add padding to container elements */
+		.container {
+		  padding: 16px;
+		}
+
+		/* Change styles for signup button on extra small screens */
+		@media screen and (max-width: 300px) {
+		  .signupbtn {
+			 width: 50%;
+		  }
+		}
+	</style>
+	<script type="text/javascript">
+		console.log(!localStorage.getItem('token'));
+		async function serverSignup(interests_array)
+		{
+			    var formdata = new FormData();
+			    formdata.append("username", document.getElementById("username").value);
+			    formdata.append("password", document.getElementById("password").value);
+			    formdata.append("birthday", document.getElementById("birthday").value);
+			    formdata.append("state", document.getElementById("state").value);
+			    formdata.append("age_min", document.getElementById("age_min").value);
+			    formdata.append("age_max", document.getElementById("age_max").value);
+			    formdata.append("pref_state", document.getElementById("pref_state").value);
+			    formdata.append("interests", interests_array);
+			    var requestOptions = {
+			      method: 'POST',
+			      body: formdata,
+			      redirect: 'follow'
+			    };
+			    const response=await fetch("http://127.0.0.1:8000/signup/", requestOptions).then( response => response.json().then(receivedData => ({status:response.status,data:receivedData})));
+			    // store the token
+			    if (response.status=="201")
+			    {
+				    localStorage.setItem('token',response.data.token);
+				    console.log(response.data.token);
+				   alert("Signup successful. Redirecting...")
+				   window.location.replace('http://127.0.0.1:8000/start_chat/');
+			    }
+			    else
+			    {
+			    	console.log("failed");
+			    	if (response.data.username)
+			    	{
+			    		alert("username not available.Try again");
+			    	}
+			    	else
+			    	{
+			    		alert("signup failed");
+			    	}
+
+			    }
+			    // redirect
+			  }
+
+		function onSignup() { // do not async here
+			// event.preventDefault();
+			// return false;
+			var interests = document.getElementById("interests").value
+			console.log(interests," interests");
+			var interests_array = interests.split(" ")
+			console.log(interests_array," interests_array");
+			if (interests_array.length >5)
+			{
+				document.getElementById("interests_warn").innerHTML="Interests count should not be more that 5";
+			}
+			else
+			{
+				document.getElementById("interests_warn").innerHTML="";	
+				serverSignup(interests_array);
+
+			}
+			return false;
+
+		}
+	</script>
+	<body>
+		<form id="signup_form" onsubmit="return onSignup()">
+			<div class="container">
+			<h1>Sign Up</h1><br>
+			<h2>About you</h2>
+			<hr>
+		    <label for="username" pattern="/^[a-z0-9]{5,15}$/"><b>username (5 to 15 characters, alphanumeric, small letters)</t></b></label>
+			<br>
+			<input type="text" placeholder="Enter username" name="username" id="username" pattern="^[a-z0-9]{5,15}$" required>
+			<br>
+
+			<label for="password"><b>Password</b></label>
+			<br>
+			<input type="password" placeholder="Enter Your Password (Atleast one upper and lower case letter and minimum 8 characters)"  value="Hello!123" name="password" id="password" pattern="(?=.*[a-z])(?=.*[A-Z]).{8,}" required><br>
+
+			<label for="birthday"><b>Enter Your Birthday</b>
+			</label><br><br>
+			<input type="date" id="birthday" value="2007-01-01" max="2008-04-05" name="birthday">
+			<br><br>
+			
+			<br><br>
+			<label for="state"><b>Select your state </b></label>
+			<br><br>
+			<select name="state" id="state">
+				<option value="Andhra Pradesh">Andhra Pradesh</option>   
+				<option value="Arunachal Pradesh">Arunachal Pradesh</option>
+				<option value="Assam">Assam</option>   
+				<option value="Bihar">Bihar</option>
+				<option value="Chhattisgarh">Chhattisgarh</option>   
+				<option value="Goa">Goa</option>   
+				<option value="Gujarat">Gujarat</option>   
+				<option value="Haryana">Haryana</option>   
+				<option value="Himachal Pradesh">Himachal Pradesh</option>   
+				<option value="Jammu and Kashmir">Jammu and Kashmir</option>   
+				<option value="Jharkhand">Jharkhand</option>   
+				<option value="Karnataka">Karnataka</option>   
+				<option value="Kerala">Kerala</option>   
+				<option value="Madhya Pradesh">Madhya Pradesh</option>   
+				<option value="Maharashtra">Maharashtra</option>
+				<option value="Manipur">Manipur</option>   
+				<option value="TamilNadu">TamilNadu</option>  
+				<option value="Odisha">Odisha</option>
+				<option value="Punjab">Punjab</option>
+				<option value="Rajasthan">Rajasthan</option>
+				<option value="Sikkim">Sikkim</option>
+				<option value="Telangana">Telangana</option>
+				<option value="Uttar Pradesh">Uttar Pradesh</option> 
+				<option value="Uttarakhand">Uttarkhand</option>
+				<option value="West Bengal">West Bengal</option>
+			</select>
+			<br><br>
+
+			<h2>Match preferences</h2><br>
+			<label for="age_min"><b>Minimum Age Prefered</b></label>
+			<br>
+			<input type="number" placeholder="Enter the Minimum Age Prefered" min="15" max="60" name="age_min" id="age_min" value="16" required><br>
+
+			<label for="age_max"><b>Maximum Age Prefered</b></label>
+			<br>
+			<input type="number" placeholder="Enter the Maximum Age Prefered" name="age_max" min="15"  id="age_max" max="60" value="20" required><br>
+
+			<label for="pref_state"><b>State Prefered </b></label>
+			<br><br>
+			<select name="pref_state" id="pref_state">
+				<option value="Andhra Pradesh">Andhra Pradesh</option>   
+				<option value="Arunachal Pradesh">Arunachal Pradesh</option>
+				<option value="Assam">Assam</option>   
+				<option value="Bihar">Bihar</option>
+				<option value="Chhattisgarh">Chhattisgarh</option>   
+				<option value="Goa">Goa</option>   
+				<option value="Gujarat">Gujarat</option>   
+				<option value="Haryana">Haryana</option>   
+				<option value="Himachal Pradesh">Himachal Pradesh</option>   
+				<option value="Jammu and Kashmir">Jammu and Kashmir</option>   
+				<option value="Jharkhand">Jharkhand</option>   
+				<option value="Karnataka">Karnataka</option>   
+				<option value="Kerala">Kerala</option>   
+				<option value="Madhya Pradesh">Madhya Pradesh</option>   
+				<option value="Maharashtra">Maharashtra</option>
+				<option value="Manipur">Manipur</option>   
+				<option value="TamilNadu">TamilNadu</option>  
+				<option value="Odisha">Odisha</option>
+				<option value="Punjab">Punjab</option>
+				<option value="Rajasthan">Rajasthan</option>
+				<option value="Sikkim">Sikkim</option>
+				<option value="Telangana">Telangana</option>
+				<option value="Uttar Pradesh">Uttar Pradesh</option> 
+				<option value="Uttarakhand">Uttarkhand</option>
+				<option value="West Bengal">West Bengal</option>
+			</select>
+			<br><br>
+
+			<label for="interests"><b>Enter your interests (Maximum 5,separated by space)</b></label>
+			<br>
+			<p style="color:red;" id="interests_warn"></p>
+			<input type="text" rows="4" cols="50" maxlength="200" placeholder="Enter Your Interest" pattern="[a-zA-Z0-9 ]+" name="interests" id="interests" required><br>
+
+		 	<button id="submit_button"> Signup</button>
+			<br><br>
+			Existing user?<a href="http://127.0.0.1:8000/login_page">Login </a>
+		  </div>
+		</form>
+</body>
+</html>

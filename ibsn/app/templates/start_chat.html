@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+
+/* Full-width input fields */
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+input[type=number], input[type=password] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+/* Set a style for all buttons */
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 30%;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+/* Extra styles for the cancel button */
+.cancelbtn {
+  width: auto;
+  padding: 10px 18px;
+  background-color: #f44336;
+}
+
+/* Center the image and position the close button */
+
+.container {
+  padding: 16px;
+}
+
+span.psw {
+  float: right;
+  padding-top: 16px;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  padding-top: 60px;
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button (x) */
+.close {
+  position: absolute;
+  right: 25px;
+  top: 0;
+  color: #000;
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: red;
+  cursor: pointer;
+}
+
+/* Add Zoom Animation */
+.animate {
+  -webkit-animation: animatezoom 0.6s;
+  animation: animatezoom 0.6s
+}
+
+@-webkit-keyframes animatezoom {
+  from {-webkit-transform: scale(0)} 
+  to {-webkit-transform: scale(1)}
+}
+  
+@keyframes animatezoom {
+  from {transform: scale(0)} 
+  to {transform: scale(1)}
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+  span.psw {
+     display: block;
+     float: none;
+  }
+  .cancelbtn {
+     width: 100%;
+  }
+}
+</style>
+</head>
+<body>
+  <script type="text/javascript">
+    var token = localStorage.getItem('token');
+    var requestOptions = {
+      mode:'cors',
+      method: 'POST',
+      redirect: 'follow',
+      headers: {
+          'Authorization': 'Token '+token ,
+        'Content-Type': 'application/json'
+      },
+    };
+    async function serverLogout()
+    {
+      let responseData=await fetch("http://127.0.0.1:8000/logout/", requestOptions)
+        .then(response => {return response;})  
+        .catch(error => { console.log("error"); return null;});
+        console.log(responseData);
+        if (responseData.status=="200" || responseData.status=="401")
+        {
+          // 401 means unauthorised (invalid token or no toekn)
+          window.location.replace('http://127.0.0.1:8000/login_page/');
+        }
+        else
+        {
+          alert("Couldn't logout")
+        }
+    }
+   function onLogout()
+    {
+      console.log("logout");
+      serverLogout();
+      return false;
+
+    }
+    async function loadPrefs()
+    { 
+        console.log("loadPrefs");
+        let responseData=await fetch("http://127.0.0.1:8000/get_preferences_and_interests/", requestOptions)
+          .then(response => response.text())
+          .then(result => {return result;})
+          .catch(error => { console.log("error"); return null;});
+        responseData = responseData.replace(/"/g,"")
+        console.log(responseData);
+        var arrayData= responseData.split(",");
+        console.log(arrayData);
+        document.getElementById("age_min").value = arrayData[0];
+        document.getElementById("age_max").value = arrayData[1];
+        document.getElementById("pref_state").value = arrayData[2];
+        var i;
+        var interests_string = "";
+        for (i = 3; i < arrayData.length; i++) {
+          interests_string += arrayData[i] + " ";
+        } 
+        // delete the last space
+        interests_string = interests_string.slice(0, -1)
+        document.getElementById("interests").value = interests_string;
+    }
+    loadPrefs()
+    async function serverChangePref(interests_array) {
+      console.log(token," .......")
+      requestOptions.body = (JSON.stringify({age_min:document.getElementById('age_min').value,age_max:document.getElementById('age_max').value,pref_state:document.getElementById('pref_state').value}))
+
+        console.log("set_preferences")
+      let responseData1=await fetch("http://127.0.0.1:8000/set_preferences/", requestOptions)
+        .then(response => {return response;})
+        .catch(error => { console.log("error", error);alert("Couldn't update"+error); return null;});
+
+        console.log(responseData1);
+
+        requestOptions.body = JSON.stringify({interests:interests_array})
+        console.log("set_interests")
+        let responseData2=await fetch("http://127.0.0.1:8000/set_interests/", requestOptions)
+        .then(response => {return response;})
+        .catch(error => { console.log("error", error);alert("Couldn't update"+error); return null;});
+
+        console.log(responseData2);
+        // alert("Updated..redirecting");
+        console.log("redirecting to chat page..");
+        window.location.replace('http://127.0.0.1:8000/chat_page/');
+
+    }
+    function onChangePref()
+    {
+      // serverChangePref();
+      var interests = document.getElementById("interests").value
+      console.log(interests," interests");
+      var interests_array = interests.split(" ")
+      console.log(interests_array," interests_array");
+      if (interests_array.length >5)
+      {
+        document.getElementById("interests_warn").innerHTML="Interests count should not be more that 5";
+      }
+      else
+      {
+        document.getElementById("interests_warn").innerHTML=""; 
+        serverChangePref(interests_array);
+
+      }
+      return false;
+    }
+  </script>
+<div>
+  <form onsubmit="return onChangePref()">
+      <div class="container">
+      <h2> Change your preferences </h2>
+      <label for="age_min"><b>Minimum Age</b></label>
+      <input type="number" min="15" max="60" placeholder="Minimum Age" name="age_min" id="age_min" required>
+
+      <label for="age_max"><b>Maximum Age</b></label>
+      <input type="number" min="15" max="60" placeholder="Maximum Age" name="age_max" id="age_max" required>
+      
+      <label for="state"><b>State Prefered</b></label>
+      <br><br>
+      <select name="state" id="pref_state">
+        <option value="Andhra Pradesh">Andhra Pradesh</option>   
+        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+        <option value="Assam">Assam</option>   
+        <option value="Bihar">Bihar</option>
+        <option value="Chhattisgarh">Chhattisgarh</option>   
+        <option value="Goa">Goa</option>   
+        <option value="Gujarat">Gujarat</option>   
+        <option value="Haryana">Haryana</option>   
+        <option value="Jharkhand">Jharkhand</option>   
+        <option value="Karnataka">Karnataka</option>   
+        <option value="Kerala">Kerala</option>   
+        <option value="Madhya Pradesh">Madhya Pradesh</option>   
+        <option value="Maharashtra">Maharashtra</option>
+        <option value="Manipur">Manipur</option>   
+        <option value="TamilNadu">TamilNadu</option>  
+        <option value="Odisha">Odisha</option>
+        <option value="Punjab">Punjab</option>
+        <option value="Rajasthan">Rajasthan</option>
+        <option value="Sikkim">Sikkim</option>
+        <option value="Telangana">Telangana</option>
+        <option value="Uttar Pradesh">Uttar Pradesh</option> 
+        <option value="Uttarakhand">Uttarkhand</option>
+        <option value="West Bengal">West Bengal</option>
+      </select>
+      <br><br>
+      <label for="interests"><b>Enter your interests (Maximum 5,separated by space)</b></label>
+      <br>
+      <p style="color:red;" id="interests_warn"></p>
+      <input type="text" rows="4" cols="50" maxlength="200" placeholder="Enter Your Interest" pattern="[a-zA-Z0-9 ]+" name="interests" id="interests" required><br>
+      <button>Start Chat</button>
+     </div>
+    </form>
+</div>
+</body>
+<button style="float: right;" onclick="serverLogout()" >Logout</button>
+</html>

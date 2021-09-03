@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* Create three unequal columns that floats next to each other */
+.column {
+  float: left;
+  padding: 10px;
+  height: 75px; /* Should be removed. Only for demonstration */
+}
+
+.left1 {
+  width:30%;
+}
+
+.middle1{
+  width:70%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+
+.button {
+  background-color:#4CAF50 ;
+  border: none;
+  height:2.0rem;
+  color: white;
+  padding: 10px 10px;
+  text-align: top;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 10px;
+  margin: 0px 20px;
+  cursor: pointer;
+}
+   
+body {
+    margin: 0px auto;
+    font-family: "Lato";
+    font-weight: 100;
+  }
+   
+.messagebox {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+#chatbox {
+    text-align:left,right;
+    margin: 0 auto;
+    margin-bottom: 0px;
+    padding: 10px;
+    background: #fff;
+    overflow:hidden;
+    height:1%;
+    padding-bottom: 50px;
+    width: auto;
+    border: 1px solid #a7a7a7;
+    border-radius: 4px;
+    border-bottom: 4px solid #a7a7a7;
+  }
+      
+#submitmsg,
+#enter{
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 20%;
+  opacity: 0.9;  }
+
+   #usermsg {
+    flex: 1;
+    border-radius: 4px;
+    border: 1px solid #4CAF50;
+  }
+
+.button {width: 50%;}
+
+.right {
+  position: absolute;
+  right: 0px;
+  width: 200px;
+  border: 3px solid #73AD21;
+  padding: 10px;
+}
+
+.left {
+  position: absolute;
+  left: 0px;
+  width: 200px;
+  border: 3px solid #73AD21;
+  padding: 10px;
+}
+
+#chatbox {
+  overflow: auto;
+}
+
+.box--right {
+  width: 300px;
+  margin: 50px auto;
+  background: #00bfb6;
+  padding: 20px;
+  right: 25px;
+  text-align: center;
+  font-weight: 300;
+  color: #fff;
+  font-family: arial;
+  position: absolute;
+}
+
+.box--left {
+  width: 300px;
+  margin: 50px auto;
+  background: #00bfb6;
+  padding: 20px;
+  left: 25px;
+  text-align: center;
+  font-weight: 300;
+  color: #fff;
+  font-family: arial;
+  position: absolute;
+}
+
+.sb1:before {
+  content: "";
+  width: 0px;
+  height: 0px;
+  position: absolute;
+  border-left: 10px solid #00bfb6;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #00bfb6;
+  border-bottom: 10px solid transparent;
+  right: -19px;
+  top: 6px;
+}
+
+.sb2:before {
+  content: "";
+  width: 0px;
+  height: 0px;
+  position: absolute;
+  border-left: 10px solid transparent;
+  border-right: 10px solid #00bfb6;
+  border-top: 10px solid #00bfb6;
+  border-bottom: 10px solid transparent;
+  left: -19px;
+  top: 6px;
+}
+
+/* pop up styles */
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  padding-top: 60px;
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 0% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+  border: 0px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button (x) */
+.close {
+  position: absolute;
+  right: 25px;
+  top: 0;
+  color: #000;
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: red;
+  cursor: pointer;
+}
+
+/* Add Zoom Animation */
+.animate {
+  -webkit-animation: animatezoom 0.6s;
+  animation: animatezoom 0.6s
+}
+
+@-webkit-keyframes animatezoom {
+  from {-webkit-transform: scale(0)} 
+  to {-webkit-transform: scale(1)}
+}
+  
+@keyframes animatezoom {
+  from {transform: scale(0)} 
+  to {transform: scale(1)}
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+  span.psw {
+     display: block;
+     float: none;
+  }
+  .cancelbtn {
+     width: 100%;
+  }
+}
+.center {
+  margin: 0;
+  position: absolute;
+  top: 7%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+  .back_button {
+  width: auto;
+  padding: 10px 18px;
+  color: #f44336;
+}
+
+
+</style>
+
+<script>
+  //get the token and start the connection 
+  function infoSet(message)
+  {
+    document.getElementById("info").innerHTML = message;
+  }
+  var token = localStorage.getItem('token');
+  function connect(event) {
+    if (token==null)
+    {
+      console.log("No token");
+      return;
+    }
+    else
+    {
+      console.log("token found.");
+    }
+    var url="ws://127.0.0.1:8000/";
+    url = url + "?token="+token
+    socket = new WebSocket(url);
+      socket.onopen=onOpen;
+      socket.onmessage=onMessage;
+      socket.onclose=onClose;
+      socket.onerror=onError;
+  }
+  connect();
+
+  function disconnect(event) {
+    socket.close();
+    infoSet("connection closed.")
+    console.log("disconnect");
+    document.getElementById('exit_button').click();
+  }
+
+  function send(event) {
+    console.log("send : "+document.getElementById("body").value);
+    socket.send(document.getElementById("body").value);
+  }
+
+  function onOpen(event) {
+    console.log("onOpen");
+    infoSet("Connected");
+  }
+ async function loadProfile(user_id)
+  {
+    var requestOptions = {
+      mode:'cors',
+      method: 'POST',
+      redirect: 'follow',
+      headers: {
+          'Authorization': 'Token '+token ,
+        'Content-Type': 'application/json'
+      },
+     body:(JSON.stringify({id:user_id})),
+    };
+    let profileResponse=await fetch("http://127.0.0.1:8000/get_profile/", requestOptions)
+      .then(response => {return response.text();})
+      .catch(error => { console.log("error", error);alert("Couldn't get user details"+error); return null;});
+      console.log(profileResponse);
+      profileResponse = JSON.parse(profileResponse);
+      document.getElementById("opponent_name_button").innerHTML = profileResponse["name"];
+      document.getElementById("opponent_name").innerHTML = profileResponse["name"];
+      document.getElementById("opponent_age").innerHTML = profileResponse["age"];
+      document.getElementById("opponent_state").innerHTML = profileResponse["state"];
+      document.getElementById('info_page').style.display='none';
+      document.getElementById('chat_page').style.display='block';
+  }
+  function handleData(received_data)
+  {
+    var CMD = received_data["CMD"];
+    if (CMD=="WAIT_FOR_OPPONENT")
+    {
+      infoSet("Waiting for a match...");
+    }
+    else if(CMD=="OPPONENT_DETAILS")
+    {
+      var user_id = received_data["id"];
+      infoSet("Match found.. Loading user details...");
+      loadProfile(user_id);
+    }
+    else if(CMD=="MSG")
+    {
+      var message = received_data["data"];
+      incomingMessage(message);
+    }
+    else if(CMD=="OPPONENT_LEFT")
+    {
+      socket.close();
+      document.getElementById('chat_page').style.display = 'none';
+      document.getElementById('info_page').style.display = 'block';
+      document.getElementById('info').innerHTML = "User has left the chat";
+    }
+  }
+  function onMessage(event) {
+    console.log("onMessage");
+    var received_data=JSON.parse(event.data);
+    console.log("Message: Data received from server:"+(received_data["CMD"]));
+    handleData(received_data);
+  }
+  function onClose(event) {
+    console.log("onClose");
+    if (event.wasClean) {
+      console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+    } else {
+      // e.g. server process killed or network down
+      // event.code is usually 1006 in this case
+      console.log('[close] Connection died');
+    }
+    // document.getElementById('exit_button').click();
+  }
+  function onError(event) {
+    console.log("onError");
+    console.log("Error");
+  }
+  function incomingMessage(text) {
+    var msg = document.createElement("p");
+    msg.classList.add('box--left', 'sb2');
+    var msg_content = document.createTextNode(text);
+    msg.appendChild(msg_content);
+    var element = document.getElementById("chatbox");
+    element.appendChild(msg);
+    for(i = 0; i < 4; i++) {
+      element.appendChild(document.createElement("br"));
+    }
+  }
+
+  function outgoingMessage() {
+    var text = document.getElementById("usermsg").value;
+    var full_message = "{\"CMD\":\"MSG\",\"data\":\"" + text + "\"}";
+    console.log(full_message);
+    socket.send(full_message);
+    var msg = document.createElement("p");
+    msg.classList.add('box--right', 'sb1');
+    var msg_content = document.createTextNode(text);
+    msg.appendChild(msg_content);
+    var element = document.getElementById("chatbox");
+    element.appendChild(msg);
+    for(i = 0; i < 4; i++) {
+      element.appendChild(document.createElement("br"));
+    }
+  }
+
+// Get the modal
+var modal = document.getElementById('popup_modal');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+<body>
+
+<!-- "finding a match" ends -->
+<!-- <div id="info_page">
+  <p id="info">Connecting to server...</p>
+  <a href="/start_chat">Back</a>
+</div> -->
+<!-- "finding a match" starts -->
+
+  <!-- chat area div starts -->
+<div style="display: block;" id="chat_page">
+<div class="row">
+  <div class="column left1" style="background-color:#aaa;">
+        <a href="/start_chat" align="left">
+	        <button id="exit_button" type="button" class="button"> Exit </button>
+	      </a>
+  </div>
+
+  <div class="column middle1" style="background-color:#bbb;">
+  <div class="center">
+	   <button id="opponent_name_button" onclick="document.getElementById('popup_modal').style.display='block'" style="width:auto;">User Name</button>
+	</div>
+
+    <div id="popup_modal" class="modal">
+                  <div class="modal-content animate">
+                    <div class="container">
+                      <b>Name</b>
+                      <p id ="opponent_name">Jaga</p>
+
+                      <b>Age</b>
+                      <p id ="opponent_age">23</p>
+                      <br>
+
+                      <b>State</b>
+                      <p id ="opponent_state">TamilNadu</p>
+                      <br>
+                    </div>
+                    <br>
+                <div class="container" style="background-color:#ff4000">
+                  <button type="button" onclick="document.getElementById('popup_modal').style.display='none'" class="back_button">Back</button>
+                </div>
+                </div>
+              </div>
+</div>
+
+</div>
+
+<div id="wrapper">
+    <div id="chatbox">
+    </div>
+      <div class="messagebox" action="">
+        <input name="usermsg" type="text" id="usermsg" />
+        <input name="submitmsg" type="button" id="submitmsg" value="Send" onclick = "outgoingMessage()" />
+      </div>
+</div>
+</div>
+  <!-- chat area div ends -->
+</body>
+</html>
